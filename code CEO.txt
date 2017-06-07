@@ -1,0 +1,77 @@
+﻿ public string ConvertToUnsign1(string str)
+        {
+            string[] signs = new string[] {
+            "aAeEoOuUiIdDyY",
+            "áàạảãâấầậẩẫăắằặẳẵ",
+            "ÁÀẠẢÃÂẤẦẬẨẪĂẮẰẶẲẴ",
+            "éèẹẻẽêếềệểễ",
+            "ÉÈẸẺẼÊẾỀỆỂỄ",
+            "óòọỏõôốồộổỗơớờợởỡ",
+            "ÓÒỌỎÕÔỐỒỘỔỖƠỚỜỢỞỠ",
+            "úùụủũưứừựửữ",
+            "ÚÙỤỦŨƯỨỪỰỬỮ",
+            "íìịỉĩ",
+            "ÍÌỊỈĨ",
+            "đ",
+            "Đ",
+            "ýỳỵỷỹ",
+            "ÝỲỴỶỸ"
+        };
+            for (int i = 1; i < signs.Length; i++)
+            {
+                for (int j = 0; j < signs[i].Length; j++)
+                {
+                    str = str.Replace(signs[i][j], signs[0][i - 1]);
+                }
+            }
+            return str;
+        }
+
+        SongBusinessLayer lstBal = new SongBusinessLayer();
+        public ActionResult Index(string option = "", string search = "")
+        {
+            Karaoke db = new Karaoke();
+            int dem = search.Length;
+            //List<SongViewModel> Songs = lstBal.GetSong();
+            //return View("ListSong", Songs);
+
+            //if a user choose the radio button option as Subject   
+            if (option == "SoName")
+            {
+                List<SongViewModel> Songs = lstBal.GetSong();
+                List<SongViewModel> Searched = Songs.Where(x => ConvertToUnsign1(x.SongName.ToLower()).Contains(ConvertToUnsign1(search).ToLower())).ToList();
+                return View("ListSong", Searched);
+            }
+            else if (option == "SiName")
+            {
+                List<SongViewModel> Songs = lstBal.GetSong();
+                List<SongViewModel> Searched = Songs.Where(x => ConvertToUnsign1(x.SingerName.ToLower()).Contains(ConvertToUnsign1(search).ToLower())).ToList();
+                return View("ListSong", Searched);
+
+            }
+            else if (option == "AName")
+            {
+                List<SongViewModel> Songs = lstBal.GetSong();
+                List<SongViewModel> Searched = Songs.Where(x => ConvertToUnsign1(x.AuthorName.ToLower()).Contains(ConvertToUnsign1(search).ToLower())).ToList();
+                return View("ListSong", Searched);
+
+            }
+            else
+            {
+                List<SongViewModel> Songs = lstBal.GetSong();
+                return View("ListSong", Songs);
+            }
+
+        }
+
+
+
+
+@using (Html.BeginForm("Index", "Song", FormMethod.Get))
+{
+    <b>Search Option: </b>
+    @Html.RadioButton("option", "SoName") <text>Song Name</text> 
+    @Html.RadioButton("option", "SiName") <text>Singer Name </text>  
+    @Html.RadioButton("option", "AName")<text>Author Name</text>
+    @Html.TextBox("search")<input type="submit" value="Search"/>
+}
