@@ -1,0 +1,105 @@
+// View
+<ul class="pagination">
+    
+          @if (Model.CurrentPageIndex > 1)
+          {
+            <li><a href="javascript:PagerClickBack(@Model.CurrentPageIndex-1);">Back</a></li>
+          }
+          else
+          {
+
+          }
+
+
+          @for (int i = 1; i <= Model.PageCount; i++)
+          {
+            <li>
+                @if (i != Model.CurrentPageIndex)
+                {
+                    <a href="javascript:PagerClick(@i);">@i</a>
+                }
+                else
+                {
+                    <span> @i </span>
+                }
+            </li>
+          }
+
+
+          @if (Model.CurrentPageIndex < Model.PageCount)
+          {
+            <li><a href="javascript:PagerClickNext(@Model.CurrentPageIndex+1);">Next</a></li>
+          }
+          else
+          {
+
+          }
+</ul>
+<input type="hidden" id="hfCurrentPageIndex" name="currentPageIndex" />
+}
+
+<script type="text/javascript">
+            function PagerClick(index) {
+                document.getElementById("hfCurrentPageIndex").value = index;
+                document.forms[0].submit();
+            }
+            function PagerClickNext(index) {
+                document.getElementById("hfCurrentPageIndex").value = index;
+                document.forms[0].submit();
+            }
+            function PagerClickBack(index) {
+                document.getElementById("hfCurrentPageIndex").value = index;
+                document.forms[0].submit();
+            }
+</script>
+
+// xoa Anti-token trong create, edit moi chay dc create, edit
+
+	public ActionResult Index()
+        {
+            return View(this.GenreListP(1));
+        }
+
+        [HttpPost]
+        public ActionResult Index(int currentPageIndex)
+        {
+            return View(this.GenreListP(currentPageIndex));
+        }
+
+        private GenreListViewModel GenreListP(int currentPage)
+        {
+            int maxRows = 2;
+            GenreClient client = new GenreClient();
+            GenreListViewModel generModel = new GenreListViewModel();
+            generModel.GenreList = (from genre in client.GetList()
+                                    select genre)
+                        .OrderBy(genre => genre.GenreName)
+                        .Skip((currentPage - 1) * maxRows)
+                        .Take(maxRows).ToList();
+
+            double pageCount = (double)((decimal)client.GetList().Count() / Convert.ToDecimal(maxRows));
+            generModel.PageCount = (int)Math.Ceiling(pageCount);
+
+            generModel.CurrentPageIndex = currentPage;
+
+            return generModel;
+        }
+
+//optional
+//api
+public List<Genre> GetGenres(int page, int pageSize = 2)
+        {
+            List<Genre> listGenre = new List<Genre>();
+            foreach(var item in db.Genres)
+            {
+                Genre g = new Genre();
+                g.GenreID = item.GenreID;
+                g.GenreName = item.GenreName;
+                listGenre.Add(g);
+            }
+
+            var list = listGenre.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            return list;
+        }
+
