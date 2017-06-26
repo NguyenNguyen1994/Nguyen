@@ -1,0 +1,70 @@
+(function () {
+        var app = angular.module("myApp", []);
+
+        app.controller("myController", function ($scope) {
+            $scope.date = "26/06/2017 7:00";
+
+            var datee = String($scope.date);
+            var dateee = datee.split("/")
+            $scope.day = dateee[0];
+            $scope.month = dateee[1];
+        });
+
+        app.filter("dateFilter", function () {
+            return function (d) {
+                d = String(d);
+                var dd = d.split("/");
+                var day = dd[0];
+                var month = dd[1];
+                return day + "\\" + month;
+            };
+        });
+    })();
+
+
+  app.filter("dateFilter", function () {
+            return function (d) {
+                var stringDate = String(d).split(" ");
+                var date = stringDate[0];
+                var time = stringDate[1];
+
+                var d = date.split("/");
+                return d[0] + "//" + d[1];
+            };
+        });
+
+
+app.filter("dateFilter", function () {
+            return function (d) {
+
+                var months = ["12","01","02","03","04","05","06","07","08","09","10","11"]
+
+                var stringDate = String(d).split(" ");
+
+                var date = stringDate[0].split("/");
+
+                var d = new Date(date[2],date[1], date[0]);
+                return d.getDate() + "/" + months[d.getMonth()];
+            };
+        });
+
+<strong>Date:</strong> <span ng-bind="date | dateFilter"></span>
+
+app.filter("dateFilter", function () {
+            return function (d) {
+
+                var stringD = String(d).split(" ");
+                var date = stringD[0].split("/");
+                var time = stringD[1].split(":");
+
+                var d = new Date(date[2], date[1], date[0], time[0], time[1]);
+
+                var dd = d.getMonth() + "-" + d.getDate() + "-" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes();
+
+
+                return moment(dd).utcOffset('-04:00').format('YYYY-MM-DD HH:mm')
+             
+            };
+        });
+
+momentjs
